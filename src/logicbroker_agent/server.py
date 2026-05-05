@@ -1,5 +1,7 @@
 """FastAPI server with SSE streaming for the Logicbroker agent."""
 
+__version__ = "0.1.1"
+
 import json
 import logging
 import time
@@ -179,7 +181,7 @@ async def ask(req: AskRequest):
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "version": __version__}
 
 
 # Serve static frontend if the build directory exists.
