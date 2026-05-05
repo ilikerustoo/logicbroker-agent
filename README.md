@@ -69,7 +69,7 @@ Scraped and parsed data lives in `data/`:
 | Graph analysis | [NetworkX](https://networkx.org/) with Louvain community detection |
 | Backend | [FastAPI](https://fastapi.tiangolo.com/) + [Uvicorn](https://www.uvicorn.org/) |
 | Frontend | [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) |
-| Deployment | [Railway](https://railway.com/) or [Fly.io](https://fly.io/) via Docker |
+| Deployment | [Railway](https://railway.com/) via Docker |
 
 ## Project structure
 
@@ -193,23 +193,18 @@ Returns server health and warmup status.
 
 ## Deployment
 
-### Docker
+The app deploys to [Railway](https://railway.com/) using Docker. Railway keeps containers always-on by default, which avoids the cold start penalty from loading torch/sentence_transformers (~90s).
 
-The Dockerfile is a multi-stage build:
-1. **Frontend stage** — `node:20-slim`, builds the React app with Vite
-2. **Backend stage** — `python:3.12-slim`, installs Python deps, runs the indexer at build time (bakes the ChromaDB collection into the image), copies the built frontend
+### Deploy to Railway
 
-```bash
-docker build -t logicbroker-agent .
-docker run -p 8000:8000 \
-  -e ANTHROPIC_API_KEY=sk-ant-... \
-  -e OPENAI_API_KEY=sk-... \
-  logicbroker-agent
-```
+1. **Create a Railway project** — [railway.com](https://railway.com/) → New Project → Deploy from GitHub repo
+2. **Select the repo** and set the deploy branch to `railway-deploy`
+3. **Add environment variables** in the Railway dashboard:
+   - `ANTHROPIC_API_KEY` — your Anthropic API key
+   - `OPENAI_API_KEY` — your OpenAI API key (for KG embeddings)
+4. Railway auto-detects the Dockerfile and `railway.json`, builds, and deploys
 
-### Railway
-
-The project includes a `railway.json` config:
+The `railway.json` config forces the Dockerfile builder and sets a 120s health check timeout to accommodate the initial model weight loading at startup:
 
 ```json
 {
@@ -220,28 +215,26 @@ The project includes a `railway.json` config:
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
   }
+}
 ```
 
-To deploy:
-1. Create a Railway project and connect your GitHub repo
-2. Set the deploy branch (e.g., `railway-deploy`)
-3. Add environment variables: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
-4. Railway auto-detects the Dockerfile and deploys
+### Docker build details
 
-Railway keeps containers always-on by default (no cold start). The 120s health check timeout accommodates the initial model weight loading.
+The Dockerfile is a multi-stage build:
+1. **Frontend stage** — `node:20-slim`, builds the React app with Vite
+2. **Backend stage** — `python:3.12-slim`, installs Python deps, runs the indexer at build time (bakes the ChromaDB collection into the image), copies the built frontend
 
-### Fly.io
+The CMD uses shell form (`CMD uvicorn ... --port ${PORT:-8000}`) so Railway's injected `PORT` env var is properly expanded.
 
-The project includes a `fly.toml` config targeting the `sjc` (San Jose) region with shared-cpu-1x and 1GB RAM.
+To run locally with Docker:
 
 ```bash
-fly launch
-fly secrets set ANTHROPIC_API_KEY=sk-ant-...
-fly secrets set OPENAI_API_KEY=sk-...
-fly deploy
+docker build -t logicbroker-agent .
+docker run -p 8000:8000 \
+  -e ANTHROPIC_API_KEY=sk-ant-... \
+  -e OPENAI_API_KEY=sk-... \
+  logicbroker-agent
 ```
-
-Note: Fly's auto-stop behavior (`min_machines_running = 0`) causes ~96s cold starts due to torch/sentence_transformers imports. Set `min_machines_running = 1` to keep a machine warm, or use Railway for always-on behavior.
 
 ## Environment variables
 
@@ -249,7 +242,7 @@ Note: Fly's auto-stop behavior (`min_machines_running = 0`) causes ~96s cold sta
 |----------|----------|---------|
 | `ANTHROPIC_API_KEY` | Yes | All LLM calls — classification, grading, generation, hallucination check |
 | `OPENAI_API_KEY` | Yes | Knowledge graph node/community embeddings (`text-embedding-3-small`) |
-| `PORT` | No | Server port (default: `8000`, injected by Railway/Fly) |
+| `PORT` | No | Server port (default: `8000`, injected by Railway) |
 
 ## Evaluation
 
