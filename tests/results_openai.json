@@ -1,0 +1,484 @@
+{
+  "summary": {
+    "total_queries": 15,
+    "fact_coverage": "34/43",
+    "fact_pct": 79.1,
+    "classification_accuracy": 100.0,
+    "grounding_rate": 80.0,
+    "avg_latency_secs": 15.0
+  },
+  "queries": [
+    {
+      "query": "What status does an order move to after acknowledgement, and how does a supplier send one?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 0,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Mentions status 150",
+            "found": false
+          },
+          {
+            "desc": "Mentions status 500 after acknowledgement",
+            "found": false
+          },
+          {
+            "desc": "Explains acknowledgement process",
+            "found": false
+          }
+        ]
+      },
+      "grounded": false,
+      "sources": 0,
+      "answer_length": 0,
+      "duration_secs": 22.7,
+      "error": "1 validation error for HallucinationVerdict\nreasoning\n  Field required [type=missing, input_value={'grounded': True}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing"
+    },
+    {
+      "query": "What is the full document lifecycle for a typical order from creation to invoice?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 4,
+        "total": 4,
+        "details": [
+          {
+            "desc": "Order mentioned",
+            "found": true
+          },
+          {
+            "desc": "Acknowledgement step",
+            "found": true
+          },
+          {
+            "desc": "Shipment step",
+            "found": true
+          },
+          {
+            "desc": "Invoice step",
+            "found": true
+          }
+        ]
+      },
+      "grounded": false,
+      "sources": 6,
+      "answer_length": 2523,
+      "duration_secs": 25.0,
+      "error": null
+    },
+    {
+      "query": "What documents does a supplier need to send after receiving an order to complete fulfillment?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Acknowledgement required",
+            "found": true
+          },
+          {
+            "desc": "Shipment required",
+            "found": true
+          },
+          {
+            "desc": "Invoice required",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 3,
+      "answer_length": 1059,
+      "duration_secs": 9.8,
+      "error": null
+    },
+    {
+      "query": "What connection options are available for suppliers in Logicbroker?",
+      "category": "Factual",
+      "classification": {
+        "expected": "onboarding",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Web Portal option",
+            "found": false
+          },
+          {
+            "desc": "API option",
+            "found": true
+          },
+          {
+            "desc": "EDI option",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 3,
+      "answer_length": 1040,
+      "duration_secs": 13.4,
+      "error": null
+    },
+    {
+      "query": "What is a linkkey in Logicbroker and what does it do?",
+      "category": "Factual",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "LinkKey mentioned",
+            "found": true
+          },
+          {
+            "desc": "Explains linking/grouping function",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 4,
+      "answer_length": 606,
+      "duration_secs": 9.4,
+      "error": null
+    },
+    {
+      "query": "What EDI formats does Logicbroker support for connections?",
+      "category": "Factual",
+      "classification": {
+        "expected": "edi-technical",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "AS2 format",
+            "found": true
+          },
+          {
+            "desc": "FTP/SFTP",
+            "found": true
+          },
+          {
+            "desc": "EDI mentioned",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 3,
+      "answer_length": 772,
+      "duration_secs": 12.5,
+      "error": null
+    },
+    {
+      "query": "How do I search for shipments by status using the API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Shipments endpoint",
+            "found": true
+          },
+          {
+            "desc": "Status filtering",
+            "found": true
+          },
+          {
+            "desc": "API method reference",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 5,
+      "answer_length": 1201,
+      "duration_secs": 14.3,
+      "error": null
+    },
+    {
+      "query": "How do I create a webhook in Logicbroker's API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Webhook mentioned",
+            "found": true
+          },
+          {
+            "desc": "API creation method",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 5,
+      "answer_length": 838,
+      "duration_secs": 11.1,
+      "error": null
+    },
+    {
+      "query": "What are the rate limits for the Logicbroker API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Rate limit concept",
+            "found": true
+          },
+          {
+            "desc": "Search rate limit",
+            "found": false
+          },
+          {
+            "desc": "General rate limit",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 5,
+      "answer_length": 1012,
+      "duration_secs": 12.4,
+      "error": null
+    },
+    {
+      "query": "What does the Events page show and how do I use it to diagnose document failures?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "platform-config",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Events page",
+            "found": true
+          },
+          {
+            "desc": "Error/failure visibility",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 6,
+      "answer_length": 2434,
+      "duration_secs": 18.1,
+      "error": null
+    },
+    {
+      "query": "What test cases does Logicbroker support for supplier onboarding?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "onboarding",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 0,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Fulfillment test",
+            "found": false
+          },
+          {
+            "desc": "Cancellation test",
+            "found": false
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 4,
+      "answer_length": 1504,
+      "duration_secs": 17.3,
+      "error": null
+    },
+    {
+      "query": "How does a supplier set up an EDI connection with Logicbroker?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "edi-technical",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "EDI mentioned",
+            "found": true
+          },
+          {
+            "desc": "Transport protocol",
+            "found": true
+          },
+          {
+            "desc": "Setup process",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 5,
+      "answer_length": 1608,
+      "duration_secs": 19.3,
+      "error": null
+    },
+    {
+      "query": "What is Logicbroker and what problem does it solve?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "general",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Platform description",
+            "found": true
+          },
+          {
+            "desc": "Retailers",
+            "found": true
+          },
+          {
+            "desc": "Suppliers",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 4,
+      "answer_length": 1636,
+      "duration_secs": 13.2,
+      "error": null
+    },
+    {
+      "query": "What document types exist in Logicbroker?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 5,
+        "total": 5,
+        "details": [
+          {
+            "desc": "Order",
+            "found": true
+          },
+          {
+            "desc": "Acknowledgement",
+            "found": true
+          },
+          {
+            "desc": "Shipment",
+            "found": true
+          },
+          {
+            "desc": "Invoice",
+            "found": true
+          },
+          {
+            "desc": "Return",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 2,
+      "answer_length": 477,
+      "duration_secs": 8.9,
+      "error": null
+    },
+    {
+      "query": "What is the difference between a retailer and a supplier in Logicbroker?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "general",
+        "actual": "openai-embedding",
+        "correct": true
+      },
+      "facts": {
+        "found": 0,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Retailer role explained",
+            "found": false
+          },
+          {
+            "desc": "Supplier role explained",
+            "found": false
+          }
+        ]
+      },
+      "grounded": false,
+      "sources": 0,
+      "answer_length": 0,
+      "duration_secs": 17.3,
+      "error": "1 validation error for HallucinationVerdict\nreasoning\n  Field required [type=missing, input_value={'grounded': True}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing"
+    }
+  ]
+}

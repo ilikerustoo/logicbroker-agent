@@ -1,0 +1,1036 @@
+{
+  "minilm": {
+    "metrics": {
+      "facts_found": 39,
+      "facts_total": 43,
+      "fact_pct": 90.69767441860465,
+      "grounded_count": 14,
+      "grounded_total": 15,
+      "grounding_pct": 93.33333333333333,
+      "avg_latency": 19.053473901748657,
+      "per_category": {
+        "API": {
+          "fact_pct": 100.0,
+          "grounding_pct": 100.0
+        },
+        "Conceptual": {
+          "fact_pct": 100.0,
+          "grounding_pct": 100.0
+        },
+        "Factual": {
+          "fact_pct": 87.5,
+          "grounding_pct": 100.0
+        },
+        "Relational": {
+          "fact_pct": 90.0,
+          "grounding_pct": 66.66666666666666
+        },
+        "Troubleshooting": {
+          "fact_pct": 71.42857142857143,
+          "grounding_pct": 100.0
+        }
+      }
+    },
+    "results": {
+      "summary": {
+        "total_queries": 15,
+        "fact_coverage": "39/43",
+        "fact_pct": 90.7,
+        "classification_accuracy": 100.0,
+        "grounding_rate": 93.3,
+        "avg_latency_secs": 19.1
+      },
+      "queries": [
+        {
+          "query": "What status does an order move to after acknowledgement, and how does a supplier send one?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Mentions status 150",
+                "found": false
+              },
+              {
+                "desc": "Mentions status 500 after acknowledgement",
+                "found": true
+              },
+              {
+                "desc": "Explains acknowledgement process",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1483,
+          "duration_secs": 15.0,
+          "error": null
+        },
+        {
+          "query": "What is the full document lifecycle for a typical order from creation to invoice?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 4,
+            "total": 4,
+            "details": [
+              {
+                "desc": "Order mentioned",
+                "found": true
+              },
+              {
+                "desc": "Acknowledgement step",
+                "found": true
+              },
+              {
+                "desc": "Shipment step",
+                "found": true
+              },
+              {
+                "desc": "Invoice step",
+                "found": true
+              }
+            ]
+          },
+          "grounded": false,
+          "sources": 1,
+          "answer_length": 2350,
+          "duration_secs": 28.4,
+          "error": null
+        },
+        {
+          "query": "What documents does a supplier need to send after receiving an order to complete fulfillment?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Acknowledgement required",
+                "found": true
+              },
+              {
+                "desc": "Shipment required",
+                "found": true
+              },
+              {
+                "desc": "Invoice required",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1399,
+          "duration_secs": 12.5,
+          "error": null
+        },
+        {
+          "query": "What connection options are available for suppliers in Logicbroker?",
+          "category": "Factual",
+          "classification": {
+            "expected": "onboarding",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Web Portal option",
+                "found": true
+              },
+              {
+                "desc": "API option",
+                "found": true
+              },
+              {
+                "desc": "EDI option",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2136,
+          "duration_secs": 19.6,
+          "error": null
+        },
+        {
+          "query": "What is a linkkey in Logicbroker and what does it do?",
+          "category": "Factual",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 1,
+            "total": 2,
+            "details": [
+              {
+                "desc": "LinkKey mentioned",
+                "found": false
+              },
+              {
+                "desc": "Explains linking/grouping function",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1637,
+          "duration_secs": 17.7,
+          "error": null
+        },
+        {
+          "query": "What EDI formats does Logicbroker support for connections?",
+          "category": "Factual",
+          "classification": {
+            "expected": "edi-technical",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "AS2 format",
+                "found": true
+              },
+              {
+                "desc": "FTP/SFTP",
+                "found": true
+              },
+              {
+                "desc": "EDI mentioned",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 968,
+          "duration_secs": 15.7,
+          "error": null
+        },
+        {
+          "query": "How do I search for shipments by status using the API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Shipments endpoint",
+                "found": true
+              },
+              {
+                "desc": "Status filtering",
+                "found": true
+              },
+              {
+                "desc": "API method reference",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 2,
+          "answer_length": 1692,
+          "duration_secs": 18.3,
+          "error": null
+        },
+        {
+          "query": "How do I create a webhook in Logicbroker's API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Webhook mentioned",
+                "found": true
+              },
+              {
+                "desc": "API creation method",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1450,
+          "duration_secs": 16.1,
+          "error": null
+        },
+        {
+          "query": "What are the rate limits for the Logicbroker API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Rate limit concept",
+                "found": true
+              },
+              {
+                "desc": "Search rate limit",
+                "found": true
+              },
+              {
+                "desc": "General rate limit",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2249,
+          "duration_secs": 25.9,
+          "error": null
+        },
+        {
+          "query": "What does the Events page show and how do I use it to diagnose document failures?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "platform-config",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Events page",
+                "found": true
+              },
+              {
+                "desc": "Error/failure visibility",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2399,
+          "duration_secs": 18.0,
+          "error": null
+        },
+        {
+          "query": "What test cases does Logicbroker support for supplier onboarding?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "onboarding",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 0,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Fulfillment test",
+                "found": false
+              },
+              {
+                "desc": "Cancellation test",
+                "found": false
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1901,
+          "duration_secs": 19.0,
+          "error": null
+        },
+        {
+          "query": "How does a supplier set up an EDI connection with Logicbroker?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "edi-technical",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "EDI mentioned",
+                "found": true
+              },
+              {
+                "desc": "Transport protocol",
+                "found": true
+              },
+              {
+                "desc": "Setup process",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2312,
+          "duration_secs": 17.9,
+          "error": null
+        },
+        {
+          "query": "What is Logicbroker and what problem does it solve?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "general",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Platform description",
+                "found": true
+              },
+              {
+                "desc": "Retailers",
+                "found": true
+              },
+              {
+                "desc": "Suppliers",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2154,
+          "duration_secs": 17.8,
+          "error": null
+        },
+        {
+          "query": "What document types exist in Logicbroker?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 5,
+            "total": 5,
+            "details": [
+              {
+                "desc": "Order",
+                "found": true
+              },
+              {
+                "desc": "Acknowledgement",
+                "found": true
+              },
+              {
+                "desc": "Shipment",
+                "found": true
+              },
+              {
+                "desc": "Invoice",
+                "found": true
+              },
+              {
+                "desc": "Return",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1192,
+          "duration_secs": 14.8,
+          "error": null
+        },
+        {
+          "query": "What is the difference between a retailer and a supplier in Logicbroker?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "general",
+            "actual": "MiniLM",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Retailer role explained",
+                "found": true
+              },
+              {
+                "desc": "Supplier role explained",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2485,
+          "duration_secs": 29.1,
+          "error": null
+        }
+      ]
+    }
+  },
+  "openai": {
+    "metrics": {
+      "facts_found": 38,
+      "facts_total": 43,
+      "fact_pct": 88.37209302325581,
+      "grounded_count": 11,
+      "grounded_total": 15,
+      "grounding_pct": 73.33333333333333,
+      "avg_latency": 20.72945456504822,
+      "per_category": {
+        "API": {
+          "fact_pct": 62.5,
+          "grounding_pct": 66.66666666666666
+        },
+        "Conceptual": {
+          "fact_pct": 100.0,
+          "grounding_pct": 66.66666666666666
+        },
+        "Factual": {
+          "fact_pct": 100.0,
+          "grounding_pct": 33.33333333333333
+        },
+        "Relational": {
+          "fact_pct": 100.0,
+          "grounding_pct": 100.0
+        },
+        "Troubleshooting": {
+          "fact_pct": 71.42857142857143,
+          "grounding_pct": 100.0
+        }
+      }
+    },
+    "results": {
+      "summary": {
+        "total_queries": 15,
+        "fact_coverage": "38/43",
+        "fact_pct": 88.4,
+        "classification_accuracy": 100.0,
+        "grounding_rate": 73.3,
+        "avg_latency_secs": 20.7
+      },
+      "queries": [
+        {
+          "query": "What status does an order move to after acknowledgement, and how does a supplier send one?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Mentions status 150",
+                "found": true
+              },
+              {
+                "desc": "Mentions status 500 after acknowledgement",
+                "found": true
+              },
+              {
+                "desc": "Explains acknowledgement process",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1911,
+          "duration_secs": 22.8,
+          "error": null
+        },
+        {
+          "query": "What is the full document lifecycle for a typical order from creation to invoice?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 4,
+            "total": 4,
+            "details": [
+              {
+                "desc": "Order mentioned",
+                "found": true
+              },
+              {
+                "desc": "Acknowledgement step",
+                "found": true
+              },
+              {
+                "desc": "Shipment step",
+                "found": true
+              },
+              {
+                "desc": "Invoice step",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2054,
+          "duration_secs": 22.1,
+          "error": null
+        },
+        {
+          "query": "What documents does a supplier need to send after receiving an order to complete fulfillment?",
+          "category": "Relational",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Acknowledgement required",
+                "found": true
+              },
+              {
+                "desc": "Shipment required",
+                "found": true
+              },
+              {
+                "desc": "Invoice required",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1582,
+          "duration_secs": 18.5,
+          "error": null
+        },
+        {
+          "query": "What connection options are available for suppliers in Logicbroker?",
+          "category": "Factual",
+          "classification": {
+            "expected": "onboarding",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Web Portal option",
+                "found": true
+              },
+              {
+                "desc": "API option",
+                "found": true
+              },
+              {
+                "desc": "EDI option",
+                "found": true
+              }
+            ]
+          },
+          "grounded": false,
+          "sources": 2,
+          "answer_length": 1943,
+          "duration_secs": 25.9,
+          "error": null
+        },
+        {
+          "query": "What is a linkkey in Logicbroker and what does it do?",
+          "category": "Factual",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "LinkKey mentioned",
+                "found": true
+              },
+              {
+                "desc": "Explains linking/grouping function",
+                "found": true
+              }
+            ]
+          },
+          "grounded": false,
+          "sources": 1,
+          "answer_length": 1532,
+          "duration_secs": 20.2,
+          "error": null
+        },
+        {
+          "query": "What EDI formats does Logicbroker support for connections?",
+          "category": "Factual",
+          "classification": {
+            "expected": "edi-technical",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "AS2 format",
+                "found": true
+              },
+              {
+                "desc": "FTP/SFTP",
+                "found": true
+              },
+              {
+                "desc": "EDI mentioned",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 838,
+          "duration_secs": 15.5,
+          "error": null
+        },
+        {
+          "query": "How do I search for shipments by status using the API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Shipments endpoint",
+                "found": true
+              },
+              {
+                "desc": "Status filtering",
+                "found": true
+              },
+              {
+                "desc": "API method reference",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1346,
+          "duration_secs": 14.6,
+          "error": null
+        },
+        {
+          "query": "How do I create a webhook in Logicbroker's API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Webhook mentioned",
+                "found": true
+              },
+              {
+                "desc": "API creation method",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 1282,
+          "duration_secs": 20.5,
+          "error": null
+        },
+        {
+          "query": "What are the rate limits for the Logicbroker API?",
+          "category": "API",
+          "classification": {
+            "expected": "api-integration",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 0,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Rate limit concept",
+                "found": false
+              },
+              {
+                "desc": "Search rate limit",
+                "found": false
+              },
+              {
+                "desc": "General rate limit",
+                "found": false
+              }
+            ]
+          },
+          "grounded": false,
+          "sources": 0,
+          "answer_length": 0,
+          "duration_secs": 12.9,
+          "error": "2 validation errors for GeneratedAnswer\nanswer\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing"
+        },
+        {
+          "query": "What does the Events page show and how do I use it to diagnose document failures?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "platform-config",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Events page",
+                "found": true
+              },
+              {
+                "desc": "Error/failure visibility",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2437,
+          "duration_secs": 23.7,
+          "error": null
+        },
+        {
+          "query": "What test cases does Logicbroker support for supplier onboarding?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "onboarding",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 0,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Fulfillment test",
+                "found": false
+              },
+              {
+                "desc": "Cancellation test",
+                "found": false
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 2,
+          "answer_length": 1542,
+          "duration_secs": 18.4,
+          "error": null
+        },
+        {
+          "query": "How does a supplier set up an EDI connection with Logicbroker?",
+          "category": "Troubleshooting",
+          "classification": {
+            "expected": "edi-technical",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "EDI mentioned",
+                "found": true
+              },
+              {
+                "desc": "Transport protocol",
+                "found": true
+              },
+              {
+                "desc": "Setup process",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 1,
+          "answer_length": 2141,
+          "duration_secs": 23.8,
+          "error": null
+        },
+        {
+          "query": "What is Logicbroker and what problem does it solve?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "general",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 3,
+            "total": 3,
+            "details": [
+              {
+                "desc": "Platform description",
+                "found": true
+              },
+              {
+                "desc": "Retailers",
+                "found": true
+              },
+              {
+                "desc": "Suppliers",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 2,
+          "answer_length": 2352,
+          "duration_secs": 26.2,
+          "error": null
+        },
+        {
+          "query": "What document types exist in Logicbroker?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "order-lifecycle",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 5,
+            "total": 5,
+            "details": [
+              {
+                "desc": "Order",
+                "found": true
+              },
+              {
+                "desc": "Acknowledgement",
+                "found": true
+              },
+              {
+                "desc": "Shipment",
+                "found": true
+              },
+              {
+                "desc": "Invoice",
+                "found": true
+              },
+              {
+                "desc": "Return",
+                "found": true
+              }
+            ]
+          },
+          "grounded": false,
+          "sources": 2,
+          "answer_length": 1050,
+          "duration_secs": 16.1,
+          "error": null
+        },
+        {
+          "query": "What is the difference between a retailer and a supplier in Logicbroker?",
+          "category": "Conceptual",
+          "classification": {
+            "expected": "general",
+            "actual": "OpenAI",
+            "correct": true
+          },
+          "facts": {
+            "found": 2,
+            "total": 2,
+            "details": [
+              {
+                "desc": "Retailer role explained",
+                "found": true
+              },
+              {
+                "desc": "Supplier role explained",
+                "found": true
+              }
+            ]
+          },
+          "grounded": true,
+          "sources": 2,
+          "answer_length": 2115,
+          "duration_secs": 29.8,
+          "error": null
+        }
+      ]
+    }
+  }
+}

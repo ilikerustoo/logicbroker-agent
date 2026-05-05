@@ -10,7 +10,7 @@ from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 
-from logicbroker_agent.retriever import LogicbrokerRetriever, RetrievedChunk
+from logicbroker_agent.retriever import KnowledgeGraphRetriever, LogicbrokerRetriever, RetrievedChunk
 
 logger = logging.getLogger(__name__)
 
@@ -142,13 +142,47 @@ def classify_query(state: AgentState) -> dict:
     }
 
 
-def retrieve(state: AgentState) -> dict:
-    """Retrieve relevant chunks from the vector store."""
-    retriever = _get_retriever()
-    chunks = retriever.query(state["query"], top_k=5)
+# Categories that benefit from API doc retrieval
+_API_CATEGORIES = {"api-integration", "order-lifecycle", "edi-technical"}
 
-    logger.info(f"Retrieved {len(chunks)} chunks")
-    for i, c in enumerate(chunks):
+# Categories where KG edges add value (relationship/workflow questions)
+_KG_CATEGORIES = {"order-lifecycle", "onboarding", "edi-technical"}
+
+
+def retrieve(state: AgentState) -> dict:
+    """Retrieve relevant chunks from the vector store and knowledge graph.
+
+    Uses classification-first routing:
+    - API-related queries: dual retrieval from API docs + KB articles
+    - Relational queries (order-lifecycle, onboarding, edi): also query KG for edges
+    - Other queries: standard vector retrieval
+
+    KG results are injected as a synthetic chunk so they flow through the same
+    grading and generation pipeline as vector results.
+    """
+    retriever = _get_retriever()
+    kg_retriever = _get_kg_retriever()
+    query_type = state.get("query_type", "")
+
+    if query_type in _API_CATEGORIES:
+        # Dual retrieval: API docs + KB articles, merged by score
+        api_chunks = retriever.query(state["query"], top_k=5, doc_type_filter="api_doc")
+        kb_chunks = retriever.query(state["query"], top_k=5, doc_type_filter="kb_article")
+
+        # Merge and sort by score, take top 8
+        all_chunks = api_chunks + kb_chunks
+        all_chunks.sort(key=lambda c: c.score, reverse=True)
+        chunks = all_chunks[:8]
+
+        logger.info(
+            f"Routed retrieval ({query_type}): {len(api_chunks)} API + "
+            f"{len(kb_chunks)} KB → {len(chunks)} merged"
+        )
+    else:
+        chunks = retriever.query(state["query"], top_k=5)
+        logger.info(f"Retrieved {len(chunks)} chunks")
+
+    for c in chunks:
         logger.debug(f"  [{c.score:.3f}] {c.title} (chunk {c.chunk_index + 1})")
 
     # Convert to serializable dicts
@@ -165,6 +199,24 @@ def retrieve(state: AgentState) -> dict:
         }
         for c in chunks
     ]
+
+    # Hybrid: add KG context for relational query types
+    if query_type in _KG_CATEGORIES and kg_retriever.node_count > 0:
+        kg_results = kg_retriever.query(state["query"], max_results=20)
+        if kg_results:
+            kg_text = "Knowledge Graph relationships:\n" + "\n".join(f"• {r}" for r in kg_results)
+            kg_chunk = {
+                "text": kg_text,
+                "title": "Knowledge Graph (entity relationships)",
+                "source_url": "",
+                "category": "knowledge_graph",
+                "doc_type": "kg_edges",
+                "chunk_index": 0,
+                "total_chunks": 1,
+                "score": 0.95,  # High score so it doesn't get filtered
+            }
+            doc_dicts.insert(0, kg_chunk)
+            logger.info(f"KG retrieval: {len(kg_results)} relationships added")
 
     return {"documents": [{"chunk": d, "relevant": True, "reasoning": ""} for d in doc_dicts]}
 
@@ -298,7 +350,7 @@ def check_hallucination(state: AgentState) -> dict:
         f"[{doc['title']}]\n{doc['text']}" for doc in relevant_docs
     )
 
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=512)
+    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=2048)
     structured_llm = llm.with_structured_output(HallucinationVerdict)
 
     result = structured_llm.invoke([
@@ -371,9 +423,10 @@ def route_after_hallucination_check(state: AgentState) -> Literal["__end__"]:
     return "__end__"
 
 
-# --- Retriever singleton ---
+# --- Retriever singletons ---
 
 _retriever: LogicbrokerRetriever | None = None
+_kg_retriever: KnowledgeGraphRetriever | None = None
 
 
 def _get_retriever() -> LogicbrokerRetriever:
@@ -381,6 +434,13 @@ def _get_retriever() -> LogicbrokerRetriever:
     if _retriever is None:
         _retriever = LogicbrokerRetriever()
     return _retriever
+
+
+def _get_kg_retriever() -> KnowledgeGraphRetriever:
+    global _kg_retriever
+    if _kg_retriever is None:
+        _kg_retriever = KnowledgeGraphRetriever()
+    return _kg_retriever
 
 
 # --- Graph builder ---

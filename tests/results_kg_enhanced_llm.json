@@ -1,0 +1,484 @@
+{
+  "summary": {
+    "total_queries": 15,
+    "fact_coverage": "39/43",
+    "fact_pct": 90.7,
+    "classification_accuracy": 100.0,
+    "grounding_rate": 93.3,
+    "avg_latency_secs": 17.3
+  },
+  "queries": [
+    {
+      "query": "What status does an order move to after acknowledgement, and how does a supplier send one?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Mentions status 150",
+            "found": false
+          },
+          {
+            "desc": "Mentions status 500 after acknowledgement",
+            "found": true
+          },
+          {
+            "desc": "Explains acknowledgement process",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1578,
+      "duration_secs": 16.0,
+      "error": null
+    },
+    {
+      "query": "What is the full document lifecycle for a typical order from creation to invoice?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 4,
+        "total": 4,
+        "details": [
+          {
+            "desc": "Order mentioned",
+            "found": true
+          },
+          {
+            "desc": "Acknowledgement step",
+            "found": true
+          },
+          {
+            "desc": "Shipment step",
+            "found": true
+          },
+          {
+            "desc": "Invoice step",
+            "found": true
+          }
+        ]
+      },
+      "grounded": false,
+      "sources": 1,
+      "answer_length": 2414,
+      "duration_secs": 21.2,
+      "error": null
+    },
+    {
+      "query": "What documents does a supplier need to send after receiving an order to complete fulfillment?",
+      "category": "Relational",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Acknowledgement required",
+            "found": true
+          },
+          {
+            "desc": "Shipment required",
+            "found": true
+          },
+          {
+            "desc": "Invoice required",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1487,
+      "duration_secs": 12.6,
+      "error": null
+    },
+    {
+      "query": "What connection options are available for suppliers in Logicbroker?",
+      "category": "Factual",
+      "classification": {
+        "expected": "onboarding",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Web Portal option",
+            "found": true
+          },
+          {
+            "desc": "API option",
+            "found": true
+          },
+          {
+            "desc": "EDI option",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 2143,
+      "duration_secs": 15.4,
+      "error": null
+    },
+    {
+      "query": "What is a linkkey in Logicbroker and what does it do?",
+      "category": "Factual",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 1,
+        "total": 2,
+        "details": [
+          {
+            "desc": "LinkKey mentioned",
+            "found": false
+          },
+          {
+            "desc": "Explains linking/grouping function",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1501,
+      "duration_secs": 14.1,
+      "error": null
+    },
+    {
+      "query": "What EDI formats does Logicbroker support for connections?",
+      "category": "Factual",
+      "classification": {
+        "expected": "edi-technical",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "AS2 format",
+            "found": true
+          },
+          {
+            "desc": "FTP/SFTP",
+            "found": true
+          },
+          {
+            "desc": "EDI mentioned",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1091,
+      "duration_secs": 19.1,
+      "error": null
+    },
+    {
+      "query": "How do I search for shipments by status using the API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Shipments endpoint",
+            "found": true
+          },
+          {
+            "desc": "Status filtering",
+            "found": true
+          },
+          {
+            "desc": "API method reference",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1596,
+      "duration_secs": 17.5,
+      "error": null
+    },
+    {
+      "query": "How do I create a webhook in Logicbroker's API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Webhook mentioned",
+            "found": true
+          },
+          {
+            "desc": "API creation method",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1112,
+      "duration_secs": 9.5,
+      "error": null
+    },
+    {
+      "query": "What are the rate limits for the Logicbroker API?",
+      "category": "API",
+      "classification": {
+        "expected": "api-integration",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Rate limit concept",
+            "found": true
+          },
+          {
+            "desc": "Search rate limit",
+            "found": true
+          },
+          {
+            "desc": "General rate limit",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1773,
+      "duration_secs": 15.8,
+      "error": null
+    },
+    {
+      "query": "What does the Events page show and how do I use it to diagnose document failures?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "platform-config",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Events page",
+            "found": true
+          },
+          {
+            "desc": "Error/failure visibility",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 2558,
+      "duration_secs": 20.5,
+      "error": null
+    },
+    {
+      "query": "What test cases does Logicbroker support for supplier onboarding?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "onboarding",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 0,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Fulfillment test",
+            "found": false
+          },
+          {
+            "desc": "Cancellation test",
+            "found": false
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1900,
+      "duration_secs": 18.7,
+      "error": null
+    },
+    {
+      "query": "How does a supplier set up an EDI connection with Logicbroker?",
+      "category": "Troubleshooting",
+      "classification": {
+        "expected": "edi-technical",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "EDI mentioned",
+            "found": true
+          },
+          {
+            "desc": "Transport protocol",
+            "found": true
+          },
+          {
+            "desc": "Setup process",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 2479,
+      "duration_secs": 24.9,
+      "error": null
+    },
+    {
+      "query": "What is Logicbroker and what problem does it solve?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "general",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 3,
+        "total": 3,
+        "details": [
+          {
+            "desc": "Platform description",
+            "found": true
+          },
+          {
+            "desc": "Retailers",
+            "found": true
+          },
+          {
+            "desc": "Suppliers",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 2,
+      "answer_length": 1866,
+      "duration_secs": 17.3,
+      "error": null
+    },
+    {
+      "query": "What document types exist in Logicbroker?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "order-lifecycle",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 5,
+        "total": 5,
+        "details": [
+          {
+            "desc": "Order",
+            "found": true
+          },
+          {
+            "desc": "Acknowledgement",
+            "found": true
+          },
+          {
+            "desc": "Shipment",
+            "found": true
+          },
+          {
+            "desc": "Invoice",
+            "found": true
+          },
+          {
+            "desc": "Return",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 1183,
+      "duration_secs": 16.0,
+      "error": null
+    },
+    {
+      "query": "What is the difference between a retailer and a supplier in Logicbroker?",
+      "category": "Conceptual",
+      "classification": {
+        "expected": "general",
+        "actual": "kg-enhanced",
+        "correct": true
+      },
+      "facts": {
+        "found": 2,
+        "total": 2,
+        "details": [
+          {
+            "desc": "Retailer role explained",
+            "found": true
+          },
+          {
+            "desc": "Supplier role explained",
+            "found": true
+          }
+        ]
+      },
+      "grounded": true,
+      "sources": 1,
+      "answer_length": 2148,
+      "duration_secs": 20.8,
+      "error": null
+    }
+  ]
+}
