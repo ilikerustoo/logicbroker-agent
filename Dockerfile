@@ -11,6 +11,7 @@ COPY pyproject.toml ./
 COPY src/ src/
 COPY data/ data/
 RUN pip install --no-cache-dir .
+RUN python -m logicbroker_agent.indexer
 COPY --from=frontend /app/web/dist web/dist/
 
 EXPOSE 8000

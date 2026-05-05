@@ -1,10 +1,11 @@
 """FastAPI server with SSE streaming for the Logicbroker agent."""
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import json
 import logging
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,7 +22,25 @@ from logicbroker_agent.graph import build_graph
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Logicbroker Agent API")
+# Module-level graph instance, warmed at startup
+_graph = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Warm the graph and retriever weights at startup."""
+    global _graph
+    logger.info("Warming graph and embedding model weights...")
+    _graph = build_graph()
+    # Force retriever + embedding model initialization by running a dummy query
+    from logicbroker_agent.graph import _get_retriever, _get_kg_retriever
+    _get_retriever().query("warmup", top_k=1)
+    _get_kg_retriever()
+    logger.info("Model weights loaded, ready to serve.")
+    yield
+
+
+app = FastAPI(title="Logicbroker Agent API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,7 +70,7 @@ _NODE_LABELS = {
 
 async def _stream_agent(query: str):
     """Run the agent graph with streaming, yielding SSE events per node."""
-    graph = build_graph()
+    graph = _graph or build_graph()
 
     initial_state = {
         "query": query,
@@ -82,7 +101,7 @@ async def _stream_agent(query: str):
     accumulated = dict(initial_state)
 
     try:
-        for chunk in graph.stream(initial_state):
+        async for chunk in graph.astream(initial_state):
             # LangGraph stream yields {node_name: state_update}
             for node_name, state_update in chunk.items():
                 for key, value in state_update.items():
@@ -181,7 +200,7 @@ async def ask(req: AskRequest):
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "version": __version__}
+    return {"status": "ok", "version": __version__, "warm": _graph is not None}
 
 
 # Serve static frontend if the build directory exists.
