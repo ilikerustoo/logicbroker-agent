@@ -27,5 +27,6 @@ target/
 vendor/
 *.log
 coverage/
+tests/eval_results.json
 .cache/
 tmp/
