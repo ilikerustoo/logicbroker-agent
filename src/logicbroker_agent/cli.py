@@ -1,6 +1,7 @@
 """CLI interface for the Logicbroker support agent."""
 
 import argparse
+import json
 import logging
 import sys
 import textwrap
@@ -48,7 +49,20 @@ def format_answer(result: dict, verbose: bool) -> str:
     return "\n".join(lines)
 
 
-def _repl(verbose: bool) -> None:
+def format_json(result: dict, pretty: bool = False) -> str:
+    """Format the agent result as JSON."""
+    payload = {
+        "query": result["query"],
+        "classification": result["query_type"],
+        "confidence": result["query_confidence"],
+        "answer": result["answer"],
+        "sources": result["sources"],
+        "grounded": result["grounded"],
+    }
+    return json.dumps(payload, indent=2 if pretty else None)
+
+
+def _repl(verbose: bool, as_json: bool = False, pretty: bool = False) -> None:
     """Interactive prompt loop."""
     print("Logicbroker Agent — interactive mode (type 'exit' or Ctrl-D to quit)\n")
     while True:
@@ -61,10 +75,21 @@ def _repl(verbose: bool) -> None:
             continue
         if query.lower() in ("exit", "quit"):
             break
-        if verbose:
+        if not as_json and verbose:
             print(f"\nQuery: {query}\n")
         result = run_agent(query)
-        print(f"\n{format_answer(result, verbose=verbose)}\n")
+        if as_json:
+            print(format_json(result, pretty=pretty))
+        else:
+            print(f"\n{format_answer(result, verbose=verbose)}\n")
+
+
+def _output(result: dict, verbose: bool, as_json: bool, pretty: bool = False) -> None:
+    """Print a single query result in the requested format."""
+    if as_json:
+        print(format_json(result, pretty=pretty))
+    else:
+        print(format_answer(result, verbose=verbose))
 
 
 def main():
@@ -81,7 +106,12 @@ def main():
     )
     parser.add_argument("query", nargs="*", help="The question to ask (reads from stdin if omitted)")
     parser.add_argument("-v", "--verbose", action="store_true", help="Show pipeline internals")
+    parser.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON")
+    parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON output (implies --json)")
     args = parser.parse_args()
+
+    if args.pretty:
+        args.json_output = True
 
     load_dotenv()
 
@@ -98,20 +128,20 @@ def main():
         query = " ".join(args.query)
         if not query:
             parser.error("Empty query.")
-        if args.verbose:
+        if not args.json_output and args.verbose:
             print(f"Query: {query}\n")
         result = run_agent(query)
-        print(format_answer(result, verbose=args.verbose))
+        _output(result, verbose=args.verbose, as_json=args.json_output, pretty=args.pretty)
     elif not sys.stdin.isatty():
         query = sys.stdin.read().strip()
         if not query:
             parser.error("Empty query.")
-        if args.verbose:
+        if not args.json_output and args.verbose:
             print(f"Query: {query}\n")
         result = run_agent(query)
-        print(format_answer(result, verbose=args.verbose))
+        _output(result, verbose=args.verbose, as_json=args.json_output, pretty=args.pretty)
     else:
-        _repl(args.verbose)
+        _repl(args.verbose, as_json=args.json_output, pretty=args.pretty)
 
 
 if __name__ == "__main__":
