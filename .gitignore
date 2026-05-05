@@ -28,5 +28,7 @@ vendor/
 *.log
 coverage/
 tests/eval_results.json
+data/chroma_db/
+*.egg-info/
 .cache/
 tmp/
