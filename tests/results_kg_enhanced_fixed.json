@@ -1,10 +1,10 @@
 {
   "summary": {
     "total_queries": 15,
-    "fact_coverage": "41/43",
-    "fact_pct": 95.3,
+    "fact_coverage": "42/43",
+    "fact_pct": 97.7,
     "classification_accuracy": 100.0,
-    "grounding_rate": 93.3,
+    "grounding_rate": 86.7,
     "avg_latency_secs": 16.7
   },
   "queries": [
@@ -36,8 +36,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 1708,
-      "duration_secs": 16.5,
+      "answer_length": 1453,
+      "duration_secs": 14.1,
       "error": null
     },
     {
@@ -49,7 +49,7 @@
         "correct": true
       },
       "facts": {
-        "found": 3,
+        "found": 4,
         "total": 4,
         "details": [
           {
@@ -58,7 +58,7 @@
           },
           {
             "desc": "Acknowledgement step",
-            "found": false
+            "found": true
           },
           {
             "desc": "Shipment step",
@@ -70,10 +70,10 @@
           }
         ]
       },
-      "grounded": true,
+      "grounded": false,
       "sources": 1,
-      "answer_length": 2176,
-      "duration_secs": 16.5,
+      "answer_length": 2518,
+      "duration_secs": 24.2,
       "error": null
     },
     {
@@ -104,8 +104,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 1391,
-      "duration_secs": 14.5,
+      "answer_length": 1375,
+      "duration_secs": 13.8,
       "error": null
     },
     {
@@ -136,8 +136,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 1872,
-      "duration_secs": 17.6,
+      "answer_length": 2189,
+      "duration_secs": 19.2,
       "error": null
     },
     {
@@ -164,8 +164,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 877,
-      "duration_secs": 11.2,
+      "answer_length": 347,
+      "duration_secs": 6.1,
       "error": null
     },
     {
@@ -196,8 +196,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 897,
-      "duration_secs": 12.3,
+      "answer_length": 946,
+      "duration_secs": 13.2,
       "error": null
     },
     {
@@ -229,7 +229,7 @@
       "grounded": true,
       "sources": 1,
       "answer_length": 1622,
-      "duration_secs": 16.8,
+      "duration_secs": 15.6,
       "error": null
     },
     {
@@ -256,8 +256,8 @@
       },
       "grounded": true,
       "sources": 2,
-      "answer_length": 1355,
-      "duration_secs": 14.4,
+      "answer_length": 1243,
+      "duration_secs": 15.2,
       "error": null
     },
     {
@@ -287,9 +287,9 @@
         ]
       },
       "grounded": true,
-      "sources": 2,
-      "answer_length": 2088,
-      "duration_secs": 19.5,
+      "sources": 1,
+      "answer_length": 1336,
+      "duration_secs": 12.2,
       "error": null
     },
     {
@@ -316,8 +316,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 2508,
-      "duration_secs": 18.7,
+      "answer_length": 2854,
+      "duration_secs": 23.9,
       "error": null
     },
     {
@@ -344,8 +344,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 1208,
-      "duration_secs": 13.7,
+      "answer_length": 1195,
+      "duration_secs": 14.2,
       "error": null
     },
     {
@@ -376,8 +376,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 2454,
-      "duration_secs": 21.3,
+      "answer_length": 2531,
+      "duration_secs": 25.5,
       "error": null
     },
     {
@@ -408,8 +408,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 1746,
-      "duration_secs": 16.1,
+      "answer_length": 1681,
+      "duration_secs": 16.5,
       "error": null
     },
     {
@@ -448,8 +448,8 @@
       },
       "grounded": false,
       "sources": 1,
-      "answer_length": 1208,
-      "duration_secs": 15.4,
+      "answer_length": 1284,
+      "duration_secs": 14.1,
       "error": null
     },
     {
@@ -476,8 +476,8 @@
       },
       "grounded": true,
       "sources": 1,
-      "answer_length": 2195,
-      "duration_secs": 26.3,
+      "answer_length": 2239,
+      "duration_secs": 23.2,
       "error": null
     }
   ]

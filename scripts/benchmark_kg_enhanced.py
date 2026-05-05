@@ -101,8 +101,12 @@ def check_hallucination(query: str, answer: str, docs: list[dict]) -> bool:
         SystemMessage(content=(
             "You are a hallucination detector. Given an answer and source documents, "
             "determine whether every factual claim is supported by the sources.\n\n"
-            "Mark as grounded if all claims are directly supported.\n"
-            "Mark as NOT grounded if specific facts, numbers, or procedures aren't in sources.\n\n"
+            "Mark as grounded if all core claims are supported by the sources. "
+            "When sources are knowledge graph triples or relationship statements, "
+            "reasonable elaboration on what those relationships mean is acceptable "
+            "as long as the core entities and relationships are present in the sources.\n"
+            "Mark as NOT grounded only if the answer introduces specific facts, numbers, "
+            "or procedures that have no basis in the sources.\n\n"
             f"Source documents:\n\n{source_text}"
         )),
         HumanMessage(content=f"Answer to verify:\n\n{answer}"),

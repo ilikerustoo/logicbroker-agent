@@ -6422,6 +6422,36 @@
       "context": "automatic transition from Submitted (100) once document is successfully picked up"
     },
     {
+      "subject": "0 New",
+      "predicate": "transitions_to",
+      "object": "100 Submitted",
+      "context": "order moves from New to Submitted automatically after processing and validation"
+    },
+    {
+      "subject": "100 Submitted",
+      "predicate": "transitions_to",
+      "object": "150 Ready to Acknowledge",
+      "context": "order moves to Ready to Acknowledge after being picked up; optional step for custom workflows"
+    },
+    {
+      "subject": "100 Submitted",
+      "predicate": "transitions_to",
+      "object": "200 Acknowledged",
+      "context": "order moves directly to Acknowledged once successfully picked up via API or SFTP"
+    },
+    {
+      "subject": "150 Ready to Acknowledge",
+      "predicate": "transitions_to",
+      "object": "200 Acknowledged",
+      "context": "order advances from Ready to Acknowledge to Acknowledged when acknowledgement is received"
+    },
+    {
+      "subject": "200 Acknowledged",
+      "predicate": "transitions_to",
+      "object": "500 Ready to Ship",
+      "context": "order advances to Ready to Ship once an Acknowledgement document is received"
+    },
+    {
       "subject": "Acknowledgement",
       "predicate": "advances_order_to",
       "object": "500 Ready to Ship",
