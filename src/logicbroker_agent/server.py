@@ -1,11 +1,13 @@
 """FastAPI server with SSE streaming for the Logicbroker agent."""
 
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 import json
 import logging
 import time
 from pathlib import Path
+
+from langchain_core.messages import AIMessageChunk
 
 from dotenv import load_dotenv
 
@@ -82,8 +84,22 @@ async def _stream_agent(query: str):
     accumulated = dict(initial_state)
 
     try:
-        for chunk in graph.stream(initial_state):
-            # LangGraph stream yields {node_name: state_update}
+        # Dual stream: "updates" for node completions, "messages" for token streaming
+        async for stream_type, chunk in graph.astream(
+            initial_state, stream_mode=["updates", "messages"]
+        ):
+            # --- Token-level streaming from the generate node ---
+            if stream_type == "messages":
+                msg_chunk, metadata = chunk
+                if (
+                    isinstance(msg_chunk, AIMessageChunk)
+                    and metadata.get("langgraph_node") == "generate"
+                    and msg_chunk.content
+                ):
+                    yield _sse_event("token", {"text": msg_chunk.content})
+                continue
+
+            # --- Node completion events ---
             for node_name, state_update in chunk.items():
                 for key, value in state_update.items():
                     accumulated[key] = value

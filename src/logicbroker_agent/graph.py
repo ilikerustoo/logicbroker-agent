@@ -2,6 +2,7 @@
 
 import logging
 import operator
+import re
 from typing import Annotated, Literal
 
 from langchain_anthropic import ChatAnthropic
@@ -47,10 +48,17 @@ class QueryClassification(BaseModel):
 
 
 class DocumentGrade(BaseModel):
-    """Relevance grade for a retrieved document chunk."""
+    """Relevance grade for a single document chunk."""
 
+    index: int = Field(description="The 0-based index of the document being graded")
     relevant: bool = Field(description="Whether this chunk is relevant to the query")
     reasoning: str = Field(description="Brief explanation of the relevance judgment")
+
+
+class BatchDocumentGrades(BaseModel):
+    """Batch relevance grades for all retrieved documents."""
+
+    grades: list[DocumentGrade] = Field(description="One grade per document, in order")
 
 
 class Citation(BaseModel):
@@ -118,7 +126,7 @@ class AgentState(TypedDict):
 
 def classify_query(state: AgentState) -> dict:
     """Classify the query into one of 6 support categories."""
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=256)
+    llm = _get_llm(temperature=0, max_tokens=256)
     structured_llm = llm.with_structured_output(QueryClassification)
 
     result = structured_llm.invoke([
@@ -222,33 +230,51 @@ def retrieve(state: AgentState) -> dict:
 
 
 def grade_documents(state: AgentState) -> dict:
-    """Grade each retrieved chunk for relevance to the query."""
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=256)
-    structured_llm = llm.with_structured_output(DocumentGrade)
+    """Grade all retrieved chunks for relevance in a single LLM call."""
+    llm = _get_llm(temperature=0, max_tokens=1024)
+    structured_llm = llm.with_structured_output(BatchDocumentGrades)
+
+    # Build a numbered list of all chunks for the LLM
+    docs = state["documents"]
+    chunk_descriptions = []
+    for i, doc in enumerate(docs):
+        chunk = doc["chunk"]
+        chunk_descriptions.append(
+            f"[Document {i}] (from '{chunk['title']}', chunk {chunk['chunk_index'] + 1}):\n{chunk['text']}"
+        )
+    all_chunks_text = "\n\n---\n\n".join(chunk_descriptions)
+
+    result = structured_llm.invoke([
+        SystemMessage(content=(
+            "You are a relevance grader for Logicbroker support documentation. "
+            "Given a user query and a set of document chunks, determine if each chunk "
+            "contains information relevant to answering the query. "
+            "Be generous — if a chunk is somewhat related, mark it relevant.\n\n"
+            "Return one grade per document, using the document's index (0-based)."
+        )),
+        HumanMessage(content=(
+            f"Query: {state['query']}\n\n"
+            f"Documents to grade:\n\n{all_chunks_text}"
+        )),
+    ])
+
+    # Build a lookup from index to grade
+    grade_lookup = {g.index: g for g in result.grades}
 
     graded = []
-    for doc in state["documents"]:
+    for i, doc in enumerate(docs):
         chunk = doc["chunk"]
-        result = structured_llm.invoke([
-            SystemMessage(content=(
-                "You are a relevance grader for Logicbroker support documentation. "
-                "Given a user query and a document chunk, determine if the chunk "
-                "contains information relevant to answering the query. "
-                "Be generous — if the chunk is somewhat related, mark it relevant."
-            )),
-            HumanMessage(content=(
-                f"Query: {state['query']}\n\n"
-                f"Document chunk (from '{chunk['title']}'):\n{chunk['text']}"
-            )),
-        ])
+        grade = grade_lookup.get(i)
+        is_relevant = grade.relevant if grade else True  # default relevant if LLM missed it
+        reasoning = grade.reasoning if grade else "not graded"
 
         graded.append({
             "chunk": chunk,
-            "relevant": result.relevant,
-            "reasoning": result.reasoning,
+            "relevant": is_relevant,
+            "reasoning": reasoning,
         })
 
-        relevance = "RELEVANT" if result.relevant else "IRRELEVANT"
+        relevance = "RELEVANT" if is_relevant else "IRRELEVANT"
         logger.info(f"  Grade: {relevance} — {chunk['title']} (chunk {chunk['chunk_index'] + 1})")
 
     relevant = [g for g in graded if g["relevant"]]
@@ -262,7 +288,7 @@ def grade_documents(state: AgentState) -> dict:
 
 def rewrite_query(state: AgentState) -> dict:
     """Rewrite the query for better retrieval."""
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0.3, max_tokens=256)
+    llm = _get_llm(temperature=0.3, max_tokens=256)
 
     result = llm.invoke([
         SystemMessage(content=(
@@ -284,7 +310,13 @@ def rewrite_query(state: AgentState) -> dict:
 
 
 def generate(state: AgentState) -> dict:
-    """Generate a citation-grounded answer from relevant documents."""
+    """Generate a citation-grounded answer from relevant documents.
+
+    Uses plain text generation (not structured output) so that the server
+    can stream tokens to the client as they arrive.  Citation metadata is
+    extracted from [N] references in the answer text and mapped back to the
+    known source documents.
+    """
     relevant_docs = state["relevant_documents"]
 
     if not relevant_docs:
@@ -292,50 +324,46 @@ def generate(state: AgentState) -> dict:
 
     # Build context block with numbered sources
     context_parts = []
-    sources = []
+    source_index: dict[int, dict] = {}
     for i, doc in enumerate(relevant_docs, 1):
         context_parts.append(f"[Source {i}: {doc['title']}]\n{doc['text']}")
-        sources.append({
-            "index": i,
+        source_index[i] = {
             "title": doc["title"],
             "url": doc["source_url"],
-            "category": doc["category"],
-        })
+        }
     context_block = "\n\n---\n\n".join(context_parts)
 
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=1024)
-    structured_llm = llm.with_structured_output(GeneratedAnswer)
+    llm = _get_llm(temperature=0, max_tokens=1024)
 
-    result = structured_llm.invoke([
+    result = llm.invoke([
         SystemMessage(content=(
             "You are a Logicbroker support agent. Answer the user's question using ONLY "
             "the provided source documents. Follow these rules strictly:\n\n"
             "1. Every factual claim must cite its source using [N] notation matching the source numbers.\n"
             "2. If the sources don't contain enough information to fully answer the question, "
             "say so explicitly rather than guessing.\n"
-            "3. Be concise and direct. Don't repeat the question.\n"
-            "4. Use the source titles and URLs exactly as provided in your citations list.\n\n"
+            "3. Be concise and direct. Don't repeat the question.\n\n"
             f"Source documents:\n\n{context_block}"
         )),
         HumanMessage(content=state["query"]),
     ])
 
-    # Map citations back to actual source metadata (LLM may mangle URLs)
-    # Deduplicate by URL — multiple chunks from the same page should appear once
-    source_lookup = {doc["title"]: doc for doc in relevant_docs}
-    resolved_sources = []
-    seen_urls = set()
-    for c in result.citations:
-        matched_doc = source_lookup.get(c.source_title)
-        url = matched_doc["source_url"] if matched_doc else c.source_url
-        if url in seen_urls:
-            continue
-        seen_urls.add(url)
-        resolved_sources.append({"title": c.source_title, "url": url})
+    answer_text = result.content.strip()
 
-    logger.info(f"Generated answer with {len(result.citations)} citations")
+    # Extract cited source indices from the answer and build deduplicated sources list
+    cited_indices = sorted(set(int(m) for m in re.findall(r"\[(\d+)\]", answer_text)))
+    resolved_sources = []
+    seen_urls: set[str] = set()
+    for idx in cited_indices:
+        src = source_index.get(idx)
+        if not src or src["url"] in seen_urls:
+            continue
+        seen_urls.add(src["url"])
+        resolved_sources.append(src)
+
+    logger.info(f"Generated answer with {len(resolved_sources)} citations")
     return {
-        "answer": result.answer,
+        "answer": answer_text,
         "sources": resolved_sources,
     }
 
@@ -350,7 +378,7 @@ def check_hallucination(state: AgentState) -> dict:
         f"[{doc['title']}]\n{doc['text']}" for doc in relevant_docs
     )
 
-    llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0, max_tokens=2048)
+    llm = _get_llm(temperature=0, max_tokens=2048)
     structured_llm = llm.with_structured_output(HallucinationVerdict)
 
     result = structured_llm.invoke([
@@ -423,10 +451,24 @@ def route_after_hallucination_check(state: AgentState) -> Literal["__end__"]:
     return "__end__"
 
 
-# --- Retriever singletons ---
+# --- Shared LLM + Retriever singletons ---
 
+_llm_cache: dict[tuple[float, int], ChatAnthropic] = {}
 _retriever: LogicbrokerRetriever | None = None
 _kg_retriever: KnowledgeGraphRetriever | None = None
+
+
+def _get_llm(temperature: float = 0, max_tokens: int = 1024) -> ChatAnthropic:
+    """Return a cached LLM client keyed by (temperature, max_tokens).
+
+    Avoids creating a new Anthropic HTTP client for every node invocation.
+    """
+    key = (temperature, max_tokens)
+    if key not in _llm_cache:
+        _llm_cache[key] = ChatAnthropic(
+            model="claude-sonnet-4-6", temperature=temperature, max_tokens=max_tokens,
+        )
+    return _llm_cache[key]
 
 
 def _get_retriever() -> LogicbrokerRetriever:
