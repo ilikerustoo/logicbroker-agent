@@ -85,13 +85,14 @@ class GeneratedAnswer(BaseModel):
 class HallucinationVerdict(BaseModel):
     """Verdict on whether an answer is grounded in the provided sources."""
 
-    grounded: bool = Field(
-        description="True if every factual claim in the answer is supported by the source documents"
-    )
-    reasoning: str = Field(description="Explanation of grounding assessment")
+    reasoning: str = Field(description="Brief explanation of grounding assessment")
     unsupported_claims: list[str] = Field(
         default_factory=list,
-        description="List of specific claims not supported by the source documents",
+        description="List of specific fabricated claims not in the sources (empty if none)",
+    )
+    grounded: bool = Field(
+        description="Set to true unless the answer fabricates facts not in the sources. "
+        "Omissions, simplifications, and minor imprecisions are NOT fabrications — set true for those."
     )
 
 
@@ -248,8 +249,11 @@ async def grade_documents(state: AgentState) -> dict:
         SystemMessage(content=(
             "You are a relevance grader for Logicbroker support documentation. "
             "Given a user query and a set of document chunks, determine if each chunk "
-            "contains information relevant to answering the query. "
-            "Be generous — if a chunk is somewhat related, mark it relevant.\n\n"
+            "contains information relevant to answering the query.\n\n"
+            "IMPORTANT: Default to RELEVANT. Mark a chunk irrelevant ONLY if it is "
+            "completely unrelated to the query topic. If a chunk discusses ANY entity, "
+            "concept, or process mentioned in the query — even from a different angle "
+            "(API details, specifications, configuration) — it IS relevant.\n\n"
             "Return one grade per document, using the document's index (0-based)."
         )),
         HumanMessage(content=(
@@ -383,16 +387,18 @@ async def check_hallucination(state: AgentState) -> dict:
 
     result = await structured_llm.ainvoke([
         SystemMessage(content=(
-            "You are a hallucination detector. Given an answer and the source documents it claims to be based on, "
-            "determine whether every factual claim in the answer is supported by the sources.\n\n"
-            "Mark as NOT grounded if the answer:\n"
-            "- Contains specific facts, numbers, or procedures not in the sources\n"
-            "- Makes claims that contradict the sources\n"
-            "- Presents speculation or general knowledge as if it came from the sources\n\n"
-            "Mark as grounded if:\n"
-            "- All factual claims are directly supported by source text\n"
-            "- The answer only synthesizes and rephrases information from the sources\n"
-            "- Hedged statements ('the docs don't cover this') are acceptable\n\n"
+            "You are a hallucination detector. Given an answer and source documents, check for fabricated content.\n\n"
+            "Mark as GROUNDED (the default) unless the answer clearly fabricates information:\n"
+            "- Invents facts, numbers, or procedures that appear NOWHERE in the sources\n"
+            "- Directly contradicts the sources on a key point\n\n"
+            "The following are NOT hallucinations — mark these as GROUNDED:\n"
+            "- Omitting conditions, caveats, or edge cases from the sources\n"
+            "- Rephrasing, summarizing, or simplifying source content\n"
+            "- Synthesizing a workflow or process from multiple source documents\n"
+            "- Minor imprecisions in how a transition or status is described\n"
+            "- Reasonable inferences that follow from the source content\n\n"
+            "Be LENIENT. An incomplete answer is not a hallucinated answer. "
+            "Only reject answers that introduce facts the sources do not support at all.\n\n"
             f"Source documents:\n\n{source_text}"
         )),
         HumanMessage(content=f"Answer to verify:\n\n{answer}"),

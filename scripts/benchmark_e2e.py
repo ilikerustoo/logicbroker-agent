@@ -17,6 +17,7 @@ Usage:
     python scripts/benchmark_e2e.py --category Relational  # filter by category
 """
 
+import asyncio
 import json
 import re
 import sys
@@ -255,7 +256,7 @@ def run_benchmark(categories: list[str] | None = None, verbose: bool = False) ->
 
         start = time.time()
         try:
-            state = run_agent(query)
+            state = asyncio.run(run_agent(query))
             duration = time.time() - start
 
             answer = state.get("answer", "")
