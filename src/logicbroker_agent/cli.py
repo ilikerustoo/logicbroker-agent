@@ -1,6 +1,7 @@
 """CLI interface for the Logicbroker support agent."""
 
 import argparse
+import asyncio
 import json
 import logging
 import sys
@@ -77,7 +78,7 @@ def _repl(verbose: bool, as_json: bool = False, pretty: bool = False) -> None:
             break
         if not as_json and verbose:
             print(f"\nQuery: {query}\n")
-        result = run_agent(query)
+        result = asyncio.run(run_agent(query))
         if as_json:
             print(format_json(result, pretty=pretty))
         else:
@@ -130,7 +131,7 @@ def main():
             parser.error("Empty query.")
         if not args.json_output and args.verbose:
             print(f"Query: {query}\n")
-        result = run_agent(query)
+        result = asyncio.run(run_agent(query))
         _output(result, verbose=args.verbose, as_json=args.json_output, pretty=args.pretty)
     elif not sys.stdin.isatty():
         query = sys.stdin.read().strip()
@@ -138,7 +139,7 @@ def main():
             parser.error("Empty query.")
         if not args.json_output and args.verbose:
             print(f"Query: {query}\n")
-        result = run_agent(query)
+        result = asyncio.run(run_agent(query))
         _output(result, verbose=args.verbose, as_json=args.json_output, pretty=args.pretty)
     else:
         _repl(args.verbose, as_json=args.json_output, pretty=args.pretty)

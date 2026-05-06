@@ -124,12 +124,12 @@ class AgentState(TypedDict):
 # --- Node implementations ---
 
 
-def classify_query(state: AgentState) -> dict:
+async def classify_query(state: AgentState) -> dict:
     """Classify the query into one of 6 support categories."""
-    llm = _get_llm(temperature=0, max_tokens=256)
+    llm = _get_llm(temperature=0, max_tokens=256, model="claude-haiku-4-5-20251001")
     structured_llm = llm.with_structured_output(QueryClassification)
 
-    result = structured_llm.invoke([
+    result = await structured_llm.ainvoke([
         SystemMessage(content=(
             "You are a query classifier for Logicbroker, a commerce orchestration platform. "
             "Classify the user's support query into exactly one category:\n"
@@ -157,7 +157,7 @@ _API_CATEGORIES = {"api-integration", "order-lifecycle", "edi-technical"}
 _KG_CATEGORIES = {"order-lifecycle", "onboarding", "edi-technical"}
 
 
-def retrieve(state: AgentState) -> dict:
+async def retrieve(state: AgentState) -> dict:
     """Retrieve relevant chunks from the vector store and knowledge graph.
 
     Uses classification-first routing:
@@ -229,9 +229,9 @@ def retrieve(state: AgentState) -> dict:
     return {"documents": [{"chunk": d, "relevant": True, "reasoning": ""} for d in doc_dicts]}
 
 
-def grade_documents(state: AgentState) -> dict:
+async def grade_documents(state: AgentState) -> dict:
     """Grade all retrieved chunks for relevance in a single LLM call."""
-    llm = _get_llm(temperature=0, max_tokens=1024)
+    llm = _get_llm(temperature=0, max_tokens=1024, model="claude-haiku-4-5-20251001")
     structured_llm = llm.with_structured_output(BatchDocumentGrades)
 
     # Build a numbered list of all chunks for the LLM
@@ -244,7 +244,7 @@ def grade_documents(state: AgentState) -> dict:
         )
     all_chunks_text = "\n\n---\n\n".join(chunk_descriptions)
 
-    result = structured_llm.invoke([
+    result = await structured_llm.ainvoke([
         SystemMessage(content=(
             "You are a relevance grader for Logicbroker support documentation. "
             "Given a user query and a set of document chunks, determine if each chunk "
@@ -286,11 +286,11 @@ def grade_documents(state: AgentState) -> dict:
     }
 
 
-def rewrite_query(state: AgentState) -> dict:
+async def rewrite_query(state: AgentState) -> dict:
     """Rewrite the query for better retrieval."""
-    llm = _get_llm(temperature=0.3, max_tokens=256)
+    llm = _get_llm(temperature=0.3, max_tokens=256, model="claude-haiku-4-5-20251001")
 
-    result = llm.invoke([
+    result = await llm.ainvoke([
         SystemMessage(content=(
             "You are a query rewriter for Logicbroker support. "
             "The original query didn't retrieve relevant documents. "
@@ -309,7 +309,7 @@ def rewrite_query(state: AgentState) -> dict:
     }
 
 
-def generate(state: AgentState) -> dict:
+async def generate(state: AgentState) -> dict:
     """Generate a citation-grounded answer from relevant documents.
 
     Uses plain text generation (not structured output) so that the server
@@ -335,7 +335,7 @@ def generate(state: AgentState) -> dict:
 
     llm = _get_llm(temperature=0, max_tokens=1024)
 
-    result = llm.invoke([
+    result = await llm.ainvoke([
         SystemMessage(content=(
             "You are a Logicbroker support agent. Answer the user's question using ONLY "
             "the provided source documents. Follow these rules strictly:\n\n"
@@ -368,7 +368,7 @@ def generate(state: AgentState) -> dict:
     }
 
 
-def check_hallucination(state: AgentState) -> dict:
+async def check_hallucination(state: AgentState) -> dict:
     """Verify the generated answer is grounded in the source documents."""
     relevant_docs = state["relevant_documents"]
     answer = state["answer"]
@@ -381,7 +381,7 @@ def check_hallucination(state: AgentState) -> dict:
     llm = _get_llm(temperature=0, max_tokens=2048)
     structured_llm = llm.with_structured_output(HallucinationVerdict)
 
-    result = structured_llm.invoke([
+    result = await structured_llm.ainvoke([
         SystemMessage(content=(
             "You are a hallucination detector. Given an answer and the source documents it claims to be based on, "
             "determine whether every factual claim in the answer is supported by the sources.\n\n"
@@ -453,20 +453,24 @@ def route_after_hallucination_check(state: AgentState) -> Literal["__end__"]:
 
 # --- Shared LLM + Retriever singletons ---
 
-_llm_cache: dict[tuple[float, int], ChatAnthropic] = {}
+_llm_cache: dict[tuple[str, float, int], ChatAnthropic] = {}
 _retriever: LogicbrokerRetriever | None = None
 _kg_retriever: KnowledgeGraphRetriever | None = None
 
 
-def _get_llm(temperature: float = 0, max_tokens: int = 1024) -> ChatAnthropic:
-    """Return a cached LLM client keyed by (temperature, max_tokens).
+def _get_llm(
+    temperature: float = 0,
+    max_tokens: int = 1024,
+    model: str = "claude-sonnet-4-6",
+) -> ChatAnthropic:
+    """Return a cached LLM client keyed by (model, temperature, max_tokens).
 
     Avoids creating a new Anthropic HTTP client for every node invocation.
     """
-    key = (temperature, max_tokens)
+    key = (model, temperature, max_tokens)
     if key not in _llm_cache:
         _llm_cache[key] = ChatAnthropic(
-            model="claude-sonnet-4-6", temperature=temperature, max_tokens=max_tokens,
+            model=model, temperature=temperature, max_tokens=max_tokens,
         )
     return _llm_cache[key]
 
@@ -522,10 +526,10 @@ def build_graph() -> StateGraph:
     return graph.compile()
 
 
-def run_agent(query: str) -> AgentState:
+async def run_agent(query: str) -> AgentState:
     """Run the agent pipeline on a query and return final state."""
     graph = build_graph()
-    return graph.invoke({
+    return await graph.ainvoke({
         "query": query,
         "query_type": "",
         "query_confidence": 0.0,
