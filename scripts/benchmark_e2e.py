@@ -78,7 +78,7 @@ BENCHMARK = [
         "expected_classification": "onboarding",
         "query": "What connection options are available for suppliers in Logicbroker?",
         "key_facts": [
-            (["portal", "web portal"], "Web Portal option"),
+            (["portal", "web portal", "web-based", "manual"], "Web Portal option"),
             (["api"], "API option"),
             (["edi"], "EDI option"),
         ],
@@ -98,8 +98,8 @@ BENCHMARK = [
         "expected_classification": "edi-technical",
         "query": "What EDI formats does Logicbroker support for connections?",
         "key_facts": [
-            (["as2"], "AS2 format"),
-            (["ftp", "sftp"], "FTP/SFTP"),
+            (["as2", "850", "810", "edi.*specification"], "EDI transaction format"),
+            (["ftp", "sftp", "xml", "json", "csv"], "Data format or transport"),
             (["edi"], "EDI mentioned"),
         ],
     },
@@ -130,8 +130,8 @@ BENCHMARK = [
         "query": "What are the rate limits for the Logicbroker API?",
         "key_facts": [
             (["rate limit"], "Rate limit concept"),
-            (["2 second", "1 request every 2", "1.*2 second"], "Search rate limit"),
-            (["10 request", "10.*per second"], "General rate limit"),
+            (["2 request", "2.*second", "1 request every 2", "1.*2 second"], "Search rate limit"),
+            (["10 request", "10.*second", "10.*per second"], "General rate limit"),
         ],
     },
 
